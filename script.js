@@ -38,12 +38,12 @@ const projectCategories = [
         projects: [
             {
                 id: 6,
-                name: "608 West 48th Street Drawing",
+                name: "608 West 48th Street, NY",
                 pdfUrl: "assets/608 West 48th Street.pdf"
             },
             {
                 id: 7,
-                name: "228 FARMINGDALE ROAD, NY",
+                name: "228 Farmingdale Road, NY",
                 pdfUrl: "assets/228 FARMINGDALE ROAD.pdf"
             },
             {
