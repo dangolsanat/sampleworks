@@ -204,7 +204,18 @@ async function renderPage(pageNum, scale) {
             viewport: scaledViewport
         };
 
-        pdfContainer.appendChild(canvas);
+        // Create container for page and watermark
+        const container = document.createElement('div');
+        container.className = 'pdf-page-container';
+        
+        // Add watermark div
+        const watermark = document.createElement('div');
+        watermark.className = 'watermark';
+        
+        container.appendChild(canvas);
+        container.appendChild(watermark);
+        pdfContainer.appendChild(container);
+
         await page.render(renderContext).promise;
         page.cleanup();
     } catch (error) {
@@ -230,6 +241,34 @@ document.querySelector('.branding').addEventListener('click', async () => {
     }
 });
 
+// Create stars for the branding section
+function createStars() {
+    const branding = document.querySelector('.branding');
+    const starsContainer = document.createElement('div');
+    starsContainer.className = 'stars';
+    
+    // Create 30 stars (reduced from 50)
+    for (let i = 0; i < 30; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Random position with some padding from edges
+        star.style.left = `${5 + Math.random() * 90}%`;  // Keep stars 5% away from edges
+        star.style.top = `${5 + Math.random() * 90}%`;
+        
+        // Shorter animation duration and delay
+        const delay = Math.random() * 3;  // Reduced from 5s to 3s
+        star.style.animation = `twinkle ${0.5 + Math.random()}s ease-in-out ${delay}s`;  // Reduced duration
+        
+        starsContainer.appendChild(star);
+    }
+    
+    branding.appendChild(starsContainer);
+}
+
+// Initialize stars
+createStars();
+
 // Theme handling
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -242,6 +281,26 @@ function toggleTheme() {
     
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
+
+    // If switching to dark mode, handle star animation
+    if (newTheme === 'dark') {
+        const stars = document.querySelector('.stars');
+        if (stars) {
+            // Remove existing stars
+            stars.remove();
+        }
+        // Create new stars
+        createStars();
+        
+        // Remove stars after 10 seconds
+        setTimeout(() => {
+            const starsToRemove = document.querySelector('.stars');
+            if (starsToRemove) {
+                starsToRemove.style.opacity = '0';
+                setTimeout(() => starsToRemove.remove(), 300); // Wait for fade out
+            }
+        }, 10000);
+    }
 }
 
 // Add theme toggle event listener
