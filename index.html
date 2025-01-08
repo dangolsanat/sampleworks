@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanat Dangol - Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="theme-toggle">
+        <button aria-label="Toggle dark mode">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+    </div>
+    <div class="container">
+        <!-- Sidebar with branding and project list -->
+        <div class="sidebar">
+            <div class="branding">
+                <h1>Sanat Dangol</h1>
+                <p class="subtitle">Sample works</p>
+                <p class="subtitle"> </p>
+                <p class="subtitle">.........</p>
+                <p class="subtitle"> </p>
+            </div>
+            <!-- <div class="sidebar-header">
+                <h2>Sample Works</h2>
+            </div> -->
+            <div class="project-list" id="projectList">
+                <!-- Project items will be added here dynamically -->
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="main-content">
+            <div id="homepage" class="active">
+                <div class="welcome-content">
+                    <h1>Welcome</h1>
+                    <p>Hello! I'm Sanat Dangol, and this is a collection of my report writing and drawing works.</p>
+                    <p>Browse through my projects in the sidebar to view detailed PDF presentations of my work.</p>
+                    <p>Thank you!</p>
+
+                </div>
+            </div>
+            <div id="pdfViewer" class="hidden">
+                <div class="empty-state">
+                    <h3>Select a project to preview</h3>
+                    <p>Choose a project from the sidebar to view its contents</p>
+                </div>
+                <div id="pdfContainer">
+                    <!-- PDF pages will be rendered here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
