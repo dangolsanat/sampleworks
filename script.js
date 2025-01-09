@@ -50,6 +50,11 @@ const projectCategories = [
                 id: 8,
                 name: "1351 Jerome Avenue, NY",
                 pdfUrl: "assets/1351 Jerome Avenue.pdf"
+            },
+            {
+                id: 9,
+                name: "23-81 31st Street, Astoria NY",
+                pdfUrl: "assets/23-81 31st Street.pdf"
             }
         ]
     }
@@ -241,34 +246,6 @@ document.querySelector('.branding').addEventListener('click', async () => {
     }
 });
 
-// Create stars for the branding section
-function createStars() {
-    const branding = document.querySelector('.branding');
-    const starsContainer = document.createElement('div');
-    starsContainer.className = 'stars';
-    
-    // Create 30 stars (reduced from 50)
-    for (let i = 0; i < 30; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        
-        // Random position with some padding from edges
-        star.style.left = `${5 + Math.random() * 90}%`;  // Keep stars 5% away from edges
-        star.style.top = `${5 + Math.random() * 90}%`;
-        
-        // Shorter animation duration and delay
-        const delay = Math.random() * 3;  // Reduced from 5s to 3s
-        star.style.animation = `twinkle ${0.5 + Math.random()}s ease-in-out ${delay}s`;  // Reduced duration
-        
-        starsContainer.appendChild(star);
-    }
-    
-    branding.appendChild(starsContainer);
-}
-
-// Initialize stars
-createStars();
-
 // Theme handling
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -291,17 +268,60 @@ function toggleTheme() {
         }
         // Create new stars
         createStars();
-        
-        // Remove stars after 1.5 seconds (changed from 10 seconds)
-        setTimeout(() => {
-            const starsToRemove = document.querySelector('.stars');
-            if (starsToRemove) {
-                starsToRemove.style.opacity = '0';
-                setTimeout(() => starsToRemove.remove(), 300); // Wait for fade out
-            }
-        }, 1500);  // Changed from 10000 to 3500 milliseconds
     }
 }
+
+// Create stars animation
+function createStars() {
+    const starsContainer = document.createElement('div');
+    starsContainer.className = 'stars';
+    document.querySelector('.branding').appendChild(starsContainer);
+
+    for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        
+        // Random position
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        star.style.left = left + '%';
+        star.style.top = top + '%';
+        
+        // Random animation with longer duration
+        const duration = 2 + Math.random() * 2; // Duration between 2s and 4s
+        const delay = Math.random() * 2; // Delay between 0s and 2s
+        star.style.animation = `twinkle ${duration}s ease-in-out ${delay}s infinite`;
+        
+        starsContainer.appendChild(star);
+    }
+
+    // If in dark mode, show stars for 3 seconds then hide
+    if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        starsContainer.style.opacity = '1';
+        setTimeout(() => {
+            if (starsContainer && starsContainer.parentNode) {
+                starsContainer.style.opacity = '0';
+            }
+        }, 3000);
+    }
+
+    // Add hover event listeners
+    const branding = document.querySelector('.branding');
+    branding.addEventListener('mouseenter', () => {
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            starsContainer.style.opacity = '1';
+        }
+    });
+
+    branding.addEventListener('mouseleave', () => {
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            starsContainer.style.opacity = '0';
+        }
+    });
+}
+
+// Initialize stars
+createStars();
 
 // Add theme toggle event listener
 document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
@@ -336,23 +356,31 @@ document.querySelector('.resume-link').addEventListener('click', async () => {
 async function handleProjectClick(project) {
     if (isLoading) return;
     isLoading = true;
-    
+
     try {
+        // Clear any existing content
         await cleanup();
+        
+        // Update UI state
         homepage.classList.remove('active');
-        document.getElementById('resumeViewer').classList.remove('active');  // Hide resume viewer
         pdfViewer.classList.remove('hidden');
+        document.getElementById('resumeViewer').classList.remove('active');
         
-        // Update active states
+        // Update active state in project list
         document.querySelectorAll('.project-item').forEach(item => {
-            item.classList.remove('active');
+            if (parseInt(item.dataset.projectId) === project.id) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
         });
-        document.querySelector(`[data-project-id="${project.id}"]`).classList.add('active');
-        
+
         // Load and render PDF
         await loadPDF(project);
     } catch (error) {
-        console.error('Error handling project click:', error);
+        console.error('Error loading project:', error);
+        // Show error message to user
+        pdfContainer.innerHTML = `<div class="error-message">Error loading project: ${error.message}</div>`;
     } finally {
         isLoading = false;
     }
