@@ -38,24 +38,25 @@ const projectCategories = [
         projects: [
             {
                 id: 6,
+                name: "23-81 31st Street, Astoria NY",
+                pdfUrl: "assets/23-81 31st Street.pdf"
+            },
+            {
+                id: 7,
                 name: "608 West 48th Street, NY",
                 pdfUrl: "assets/608 West 48th Street.pdf"
             },
             {
-                id: 7,
+                id: 8,
                 name: "228 Farmingdale Road, NY",
                 pdfUrl: "assets/228 FARMINGDALE ROAD.pdf"
             },
             {
-                id: 8,
+                id: 9,
                 name: "1351 Jerome Avenue, NY",
                 pdfUrl: "assets/1351 Jerome Avenue.pdf"
-            },
-            {
-                id: 9,
-                name: "23-81 31st Street, Astoria NY",
-                pdfUrl: "assets/23-81 31st Street.pdf"
             }
+
         ]
     }
 ];
