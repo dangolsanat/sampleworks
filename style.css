@@ -621,6 +621,16 @@ body {
 
 .resume-link {
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.resume-link:hover .category-header {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.resume-link .category-header {
+    transition: all 0.2s ease;
 }
 
 .resume-link:hover {
