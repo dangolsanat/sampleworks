@@ -9,6 +9,7 @@
     --text-secondary: #86868b;
     --border-color: #e0e0e0;
     --accent-color: rgb(94, 146, 211);
+    --accent-color-alt: rgb(94, 146, 211);
     --hover-color: #e8e8ed;
     --shadow-color: rgba(0, 0, 0, 0.1);
 }
@@ -20,6 +21,7 @@
     --text-secondary: #a1a1a6;
     --border-color: #2d2d2d;
     --accent-color: rgb(94, 146, 211);
+    --accent-color-alt: rgb(155, 155, 155);
     --hover-color: #3d3d3d;
     --shadow-color: rgba(0, 0, 0, 0.3);
 }
@@ -517,7 +519,8 @@ body {
     letter-spacing: 0.2px;
     line-height: 1.6;
     position: relative;
-    padding-top: 20px;
+    scrollbar-width: none;  /* Firefox */
+    top: -20px;
 }
 
 .resume-content::-webkit-scrollbar {
@@ -550,7 +553,6 @@ body {
     gap: 20px;
     color: var(--text-secondary);
     z-index: 100;
-    border-bottom: 1px solid var(--border-color);
 }
 
 /* Remove the shadow effect since we removed the background */
@@ -571,8 +573,15 @@ body {
     line-height: 1.7;
 }
 
+.resume-highlights p strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
 .skills-section, .experience-section, .education-section {
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .skills-section h3, .experience-section h3, .education-section h3 {
@@ -587,7 +596,17 @@ body {
 }
 
 .job {
-    margin-bottom: 25px;
+    background-color: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.job:hover {
+    background-color: var(--hover-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .job h4 {
@@ -600,12 +619,18 @@ body {
 .job ul {
     list-style-type: none;
     padding-left: 15px;
+    margin: 0;
 }
 
 .job ul li {
     margin-bottom: 8px;
     position: relative;
     line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.job ul li:last-child {
+    margin-bottom: 0;
 }
 
 .job ul li:before {
@@ -651,7 +676,7 @@ body {
 
 .parent-resume {
     display: flex;
-    gap: 40px;
+    gap: 10px;
     height: calc(100vh - 140px);
     position: relative;
 }
@@ -663,7 +688,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 0 20px 20px 0;
+    padding: 0 0px 20px 0;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
@@ -760,4 +785,83 @@ body {
 .education-section p {
     line-height: 1.6;
     margin-bottom: 10px;
+}
+
+.skills-section {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.skills-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    grid-column: 1 / -1;
+}
+
+.skills-group {
+    background-color: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.skills-group:hover {
+    background-color: var(--hover-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.skills-group-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.skill-item {
+    background-color: var(--accent-color-alt);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.skill-item:hover {
+    background-color: var(--hover-color);
+    color: var(--accent-color-alt);
+}
+
+.experience-section {
+    margin-top: 40px;
+}
+
+.experience-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.experience-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.experience-item {
+    background-color: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
 }

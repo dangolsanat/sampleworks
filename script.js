@@ -13,8 +13,8 @@ const projectCategories = [
             },
             {
                 id: 2,
-                name: "712 East 211th Street, NY",
-                pdfUrl: "assets/712 East 211th Street.pdf"
+                name: "1567 Broadway, NY",
+                pdfUrl: "assets/1567 Broadway.pdf"
             },
             {
                 id: 3,
@@ -28,9 +28,9 @@ const projectCategories = [
             },
             {
                 id: 5,
-                name: "1567 Broadway, NY",
-                pdfUrl: "assets/1567 Broadway.pdf"
-            }
+                name: "712 East 211th Street, NY",
+                pdfUrl: "assets/712 East 211th Street.pdf"
+            },
         ]
     },
     {
