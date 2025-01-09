@@ -74,18 +74,16 @@ function initializeProjects() {
         categoryHeader.textContent = category.name;
         projectList.appendChild(categoryHeader);
 
-        // Create projects under this category
+        // Create project items
         category.projects.forEach(project => {
             const projectItem = document.createElement('div');
             projectItem.className = 'project-item';
             projectItem.textContent = project.name;
-            projectItem.addEventListener('click', () => {
-                if (!isLoading) {
-                    homepage.classList.remove('active');
-                    pdfViewer.classList.remove('hidden');
-                    loadPDF(project);
-                }
-            });
+            projectItem.dataset.projectId = project.id;
+            
+            // Add click handler
+            projectItem.addEventListener('click', () => handleProjectClick(project));
+            
             projectList.appendChild(projectItem);
         });
     });
@@ -120,70 +118,49 @@ async function cleanup() {
     await new Promise(resolve => setTimeout(resolve, 100));
 }
 
-// Load PDF function
+// Function to load and render PDF
 async function loadPDF(project) {
-    if (isLoading) return;
-    
     try {
-        await cleanup();
-
-        // Update active project in sidebar
-        document.querySelectorAll('.project-item').forEach(item => {
-            item.classList.remove('active');
-            if (item.textContent === project.name) {
-                item.classList.add('active');
-            }
-        });
-
-        // Start loading new PDF
-        pdfContainer.style.display = 'flex';
-        
         // Create loading indicator
         const loadingDiv = document.createElement('div');
         loadingDiv.className = 'loading-indicator';
-        document.body.appendChild(loadingDiv);
+        pdfViewer.appendChild(loadingDiv);
 
-        // Load PDF with streaming enabled
+        // Start loading the PDF
         currentLoadingTask = pdfjsLib.getDocument(project.pdfUrl);
         currentPDF = await currentLoadingTask.promise;
         
-        // Get total pages
-        const totalPages = currentPDF.numPages;
-        loadingDiv.textContent = `Loading pages (0 of ${totalPages})`;
+        // Show PDF container
+        pdfContainer.style.display = 'flex';
         
-        // Get the first page to determine scaling
+        // Calculate initial scale
         const firstPage = await currentPDF.getPage(1);
-        const viewport = firstPage.getViewport({ scale: 1.0 });
-        const containerWidth = pdfContainer.clientWidth - 40;
-        const scale = containerWidth / viewport.width;
+        const viewport = firstPage.getViewport({ scale: 1 });
+        let baseScale = Math.min(
+            (window.innerWidth * 0.7) / viewport.width,
+            (window.innerHeight * 0.8) / viewport.height
+        );
 
-        // Load pages in batches of 2
-        const batchSize = 2;
-        for (let i = 0; i < totalPages; i += batchSize) {
-            const batch = [];
-            for (let j = 0; j < batchSize && i + j < totalPages; j++) {
-                const pageNum = i + j + 1;
-                batch.push(renderPage(pageNum, scale));
-            }
-            
-            // Update loading indicator
-            loadingDiv.textContent = `Loading pages (${Math.min(i + batchSize, totalPages)} of ${totalPages})`;
-            
-            // Render batch
-            await Promise.all(batch);
-            
-            // Small delay between batches
-            if (i + batchSize < totalPages) {
-                await new Promise(resolve => setTimeout(resolve, 50));
-            }
+        // Apply category-specific scaling
+        const category = projectCategories.find(cat => 
+            cat.projects.some(p => p.id === project.id)
+        );
+        if (category.name === "Preconstruction Survey Reports") {
+            baseScale *= 1.6; // 20% larger for precon surveys
+        } else if (category.name === "Sample Drawings") {
+            baseScale *= 1.1; // 10% larger for drawings
+        }
+
+        // Render all pages
+        for (let pageNum = 1; pageNum <= currentPDF.numPages; pageNum++) {
+            loadingDiv.textContent = `Loading page ${pageNum} of ${currentPDF.numPages}`;
+            await renderPage(pageNum, baseScale);
         }
 
         // Remove loading indicator
-        document.body.removeChild(loadingDiv);
-        
+        loadingDiv.remove();
     } catch (error) {
-        console.error('PDF error:', error);
-    } finally {
+        console.error('Error loading PDF:', error);
         isLoading = false;
     }
 }
@@ -214,6 +191,28 @@ async function renderPage(pageNum, scale) {
         
         container.appendChild(canvas);
         container.appendChild(watermark);
+
+        // Add blur overlay for page 2 of precon surveys
+        const category = projectCategories.find(cat => 
+            cat.projects.some(p => currentLoadingTask.docId.includes(p.pdfUrl))
+        );
+        if (pageNum === 2 && category?.name === "Preconstruction Survey Reports") {
+            const blurOverlay = document.createElement('div');
+            blurOverlay.className = 'blur-overlay';
+            blurOverlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 30%;
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                background-color: rgba(255, 255, 255, 0.3);
+                pointer-events: none;
+            `;
+            container.appendChild(blurOverlay);
+        }
+
         pdfContainer.appendChild(container);
 
         await page.render(renderContext).promise;
@@ -231,6 +230,7 @@ document.querySelector('.branding').addEventListener('click', async () => {
         await cleanup();
         homepage.classList.add('active');
         pdfViewer.classList.add('hidden');
+        document.getElementById('resumeViewer').classList.remove('active');
         document.querySelectorAll('.project-item').forEach(item => {
             item.classList.remove('active');
         });
@@ -292,14 +292,14 @@ function toggleTheme() {
         // Create new stars
         createStars();
         
-        // Remove stars after 10 seconds
+        // Remove stars after 1.5 seconds (changed from 10 seconds)
         setTimeout(() => {
             const starsToRemove = document.querySelector('.stars');
             if (starsToRemove) {
                 starsToRemove.style.opacity = '0';
                 setTimeout(() => starsToRemove.remove(), 300); // Wait for fade out
             }
-        }, 10000);
+        }, 1500);  // Changed from 10000 to 3500 milliseconds
     }
 }
 
@@ -311,3 +311,68 @@ initializeTheme();
 
 // Initialize the application
 initializeProjects();
+
+// Add click handler for resume link
+document.querySelector('.resume-link').addEventListener('click', async () => {
+    if (isLoading) return;
+    
+    try {
+        await cleanup();
+        document.getElementById('resumeViewer').classList.add('active');
+        document.getElementById('homepage').classList.remove('active');
+        document.getElementById('pdfViewer').classList.add('hidden');
+        // Remove active state from all project items
+        document.querySelectorAll('.project-item').forEach(item => {
+            item.classList.remove('active');
+        });
+    } catch (error) {
+        console.log('Resume view error:', error);
+    } finally {
+        isLoading = false;
+    }
+});
+
+// Function to handle project clicks
+async function handleProjectClick(project) {
+    if (isLoading) return;
+    isLoading = true;
+    
+    try {
+        await cleanup();
+        homepage.classList.remove('active');
+        document.getElementById('resumeViewer').classList.remove('active');  // Hide resume viewer
+        pdfViewer.classList.remove('hidden');
+        
+        // Update active states
+        document.querySelectorAll('.project-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-project-id="${project.id}"]`).classList.add('active');
+        
+        // Load and render PDF
+        await loadPDF(project);
+    } catch (error) {
+        console.error('Error handling project click:', error);
+    } finally {
+        isLoading = false;
+    }
+}
+
+// Add image loading verification
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.gallery-image');
+    images.forEach(img => {
+        img.onerror = function() {
+            console.error('Failed to load image:', img.src);
+            // Try reloading with absolute path
+            const newSrc = window.location.origin + '/' + img.src.replace(/^\.\//, '');
+            if (img.src !== newSrc) {
+                img.src = newSrc;
+            }
+        };
+        
+        img.onload = function() {
+            console.log('Successfully loaded image:', img.src);
+        };
+    });
+});
