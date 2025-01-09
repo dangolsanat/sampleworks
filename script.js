@@ -405,3 +405,54 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     });
 });
+
+// Typing animation function
+function typeText(element, text, speed = 50, startDelay = 0) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            element.textContent = '';
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    // Add random variation to typing speed
+                    const randomDelay = speed + (Math.random() * 50 - 25);
+                    // Add longer pause for punctuation
+                    const isPunctuation = [',', '.', '!', '?'].includes(text.charAt(i - 1));
+                    setTimeout(type, isPunctuation ? randomDelay * 3 : randomDelay);
+                } else {
+                    resolve();
+                }
+            }
+            
+            type();
+        }, startDelay);
+    });
+}
+
+// Initialize typing animation
+async function initializeTypingAnimation() {
+    const welcomeTitle = document.querySelector('.welcome-content h1');
+    const paragraphs = document.querySelectorAll('.welcome-content p');
+    
+    // Clear all text initially
+    welcomeTitle.textContent = '';
+    paragraphs.forEach(p => p.textContent = '');
+    
+    // Type the welcome text
+    await typeText(welcomeTitle, 'Welcome', 100);
+    
+    // Type each paragraph with delays
+    await typeText(paragraphs[0], "Hello! I'm Sanat Dangol, and this is a collection of my report writing and drawing works.", 50, 500);
+    
+    await typeText(paragraphs[1], "Browse through my projects in the sidebar to view detailed PDF presentations of my work.", 50, 500);
+    
+    await typeText(paragraphs[2], "Thank you!", 100, 500);
+}
+
+// Call the typing animation when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    initializeTypingAnimation();
+});
