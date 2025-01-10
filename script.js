@@ -187,38 +187,10 @@ async function renderPage(pageNum, scale) {
             viewport: scaledViewport
         };
 
-        // Create container for page and watermark
+        // Create container for page
         const container = document.createElement('div');
         container.className = 'pdf-page-container';
-        
-        // Add watermark div
-        const watermark = document.createElement('div');
-        watermark.className = 'watermark';
-        
         container.appendChild(canvas);
-        container.appendChild(watermark);
-
-        // Add blur overlay for page 2 of precon surveys
-        const category = projectCategories.find(cat => 
-            cat.projects.some(p => currentLoadingTask.docId.includes(p.pdfUrl))
-        );
-        if (pageNum === 2 && category?.name === "Preconstruction Survey Reports") {
-            const blurOverlay = document.createElement('div');
-            blurOverlay.className = 'blur-overlay';
-            blurOverlay.style.cssText = `
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 30%;
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
-                background-color: rgba(255, 255, 255, 0.3);
-                pointer-events: none;
-            `;
-            container.appendChild(blurOverlay);
-        }
-
         pdfContainer.appendChild(container);
 
         await page.render(renderContext).promise;
